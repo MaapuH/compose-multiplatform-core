@@ -42,7 +42,9 @@ import javax.swing.JDialog
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import org.jetbrains.skiko.GraphicsApi
+import org.jetbrains.skiko.RenderFactory
 import org.jetbrains.skiko.SkiaLayerAnalytics
+import org.jetbrains.skiko.context.RenderScope
 
 /**
  * System dialog for displaying Compose UI, inheriting [javax.swing.JDialog].
@@ -50,16 +52,20 @@ import org.jetbrains.skiko.SkiaLayerAnalytics
 class ComposeDialog : JDialog {
     private val composePanel: ComposeWindowPanel
 
+    fun <T> withRenderInfo(block: RenderScope.() -> T) = composePanel.withRenderInfo(block)
+
     private fun createComposePanel(
         skiaLayerAnalytics: SkiaLayerAnalytics,
         savedState: SavedState?,
-        coroutineContext: CoroutineContext
+        coroutineContext: CoroutineContext,
+        renderFactory: RenderFactory = RenderFactory.Default
     ) = ComposeWindowPanel(
         window = this,
         isUndecorated = ::isUndecorated,
         skiaLayerAnalytics = skiaLayerAnalytics,
         savedState = savedState,
-        coroutineContext = coroutineContext
+        coroutineContext = coroutineContext,
+        renderFactory = renderFactory
     )
 
     /**
@@ -83,8 +89,9 @@ class ComposeDialog : JDialog {
         skiaLayerAnalytics: SkiaLayerAnalytics = SkiaLayerAnalytics.Empty,
         savedState: SavedState? = null,
         coroutineContext: CoroutineContext = EmptyCoroutineContext,
+        renderFactory: RenderFactory = RenderFactory.Default
     ) : super(owner, "", modalityType, graphicsConfiguration) {
-        composePanel = createComposePanel(skiaLayerAnalytics, savedState, coroutineContext)
+        composePanel = createComposePanel(skiaLayerAnalytics, savedState, coroutineContext, renderFactory = renderFactory)
         contentPane.add(composePanel)
     }
 
@@ -109,8 +116,9 @@ class ComposeDialog : JDialog {
         skiaLayerAnalytics: SkiaLayerAnalytics = SkiaLayerAnalytics.Empty,
         savedState: SavedState? = null,
         coroutineContext: CoroutineContext = EmptyCoroutineContext,
+        renderFactory: RenderFactory = RenderFactory.Default,
     ) : super(owner, "", modal, graphicsConfiguration) {
-        composePanel = createComposePanel(skiaLayerAnalytics, savedState, coroutineContext)
+        composePanel = createComposePanel(skiaLayerAnalytics, savedState, coroutineContext, renderFactory = renderFactory)
         contentPane.add(composePanel)
     }
 
@@ -126,11 +134,13 @@ class ComposeDialog : JDialog {
         skiaLayerAnalytics: SkiaLayerAnalytics = SkiaLayerAnalytics.Empty,
         savedState: SavedState? = null,
         coroutineContext: CoroutineContext = EmptyCoroutineContext,
+        renderFactory: RenderFactory = RenderFactory.Default
     ): this(
         owner = null as Frame?,
         skiaLayerAnalytics = skiaLayerAnalytics,
         savedState = savedState,
-        coroutineContext = coroutineContext
+        coroutineContext = coroutineContext,
+        renderFactory = renderFactory
     )
 
     /**
@@ -145,12 +155,14 @@ class ComposeDialog : JDialog {
         owner: Window?,
         modalityType: ModalityType = ModalityType.MODELESS,
         graphicsConfiguration: GraphicsConfiguration? = null,
+        renderFactory: RenderFactory = RenderFactory.Default
     ) : this(
         owner = owner,
         modalityType = modalityType,
         graphicsConfiguration = graphicsConfiguration,
         skiaLayerAnalytics = SkiaLayerAnalytics.Empty,
         savedState = null,
+        renderFactory = renderFactory
     )
 
     /**
@@ -163,13 +175,15 @@ class ComposeDialog : JDialog {
     @ExperimentalComposeUiApi
     constructor(
         graphicsConfiguration: GraphicsConfiguration? = null,
-        coroutineContext: CoroutineContext = EmptyCoroutineContext
+        coroutineContext: CoroutineContext = EmptyCoroutineContext,
+        renderFactory: RenderFactory = RenderFactory.Default
     ) : this(
         owner = null as Frame?,
         graphicsConfiguration = graphicsConfiguration,
         skiaLayerAnalytics = SkiaLayerAnalytics.Empty,
         savedState = null,
-        coroutineContext = coroutineContext
+        coroutineContext = coroutineContext,
+        renderFactory = renderFactory
     )
 
     /**
@@ -180,11 +194,13 @@ class ComposeDialog : JDialog {
      */
     constructor(
         graphicsConfiguration: GraphicsConfiguration? = null,
+        renderFactory: RenderFactory = RenderFactory.Default
     ) : this(
         owner = null as Frame?,
         graphicsConfiguration = graphicsConfiguration,
         skiaLayerAnalytics = SkiaLayerAnalytics.Empty,
         savedState = null,
+        renderFactory = renderFactory
     )
 
     /**

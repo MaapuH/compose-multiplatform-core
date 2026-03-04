@@ -37,6 +37,8 @@ import androidx.compose.ui.configureSwingGlobalsForCompose
 import androidx.compose.ui.platform.GlobalSnapshotManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalLocalization
+import androidx.compose.ui.platform.defaultPlatformLocalization
 import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -45,6 +47,8 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import org.jetbrains.skiko.MainUIDispatcher
+import kotlin.system.exitProcess
+import org.jetbrains.skiko.RenderFactory
 
 /**
  * An entry point for the Compose application. See [awaitApplication] for more information.
@@ -223,6 +227,10 @@ suspend fun awaitApplication(
                                 // density to calculate intrinsicSize
                                 LocalDensity provides GlobalDensity,
                                 LocalLayoutDirection provides GlobalLayoutDirection,
+                                // This is also provided in `ProvidePlatformCompositionLocals`, but
+                                // for backwards compatibility we need to provide it in the
+                                // application scope too.
+                                LocalLocalization providesDefault defaultPlatformLocalization(),
                             ) {
                                 applicationScope.content()
                             }

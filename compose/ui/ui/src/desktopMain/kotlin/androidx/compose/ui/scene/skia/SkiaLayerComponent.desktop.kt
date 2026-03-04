@@ -23,6 +23,7 @@ import java.awt.Component
 import javax.swing.JComponent
 import org.jetbrains.skiko.ClipRectangle
 import org.jetbrains.skiko.GraphicsApi
+import org.jetbrains.skiko.RenderFactory
 import org.jetbrains.skiko.SkiaLayer
 import org.jetbrains.skiko.SkiaLayerAnalytics
 import org.jetbrains.skiko.SkikoRenderDelegate
@@ -64,6 +65,7 @@ internal fun SkiaLayerComponent(
     renderDelegate: SkikoRenderDelegate,
     skiaLayerAnalytics: SkiaLayerAnalytics,
     renderSettings: RenderSettings,
+    renderFactory: RenderFactory
 ): SkiaLayerComponent = when (renderSettings) {
     is RenderSettings.SwingGraphics -> SwingSkiaLayerComponent(
         mediator = mediator,
@@ -75,6 +77,7 @@ internal fun SkiaLayerComponent(
         windowContext = windowContext,
         renderDelegate = renderDelegate,
         skiaLayerAnalytics = skiaLayerAnalytics,
-        renderSettings = renderSettings
+        renderSettings = renderSettings,
+        renderFactory = renderFactory
     )
 }

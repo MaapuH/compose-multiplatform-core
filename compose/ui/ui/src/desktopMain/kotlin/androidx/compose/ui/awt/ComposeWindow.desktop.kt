@@ -40,7 +40,9 @@ import javax.swing.JFrame
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import org.jetbrains.skiko.GraphicsApi
+import org.jetbrains.skiko.RenderFactory
 import org.jetbrains.skiko.SkiaLayerAnalytics
+import org.jetbrains.skiko.context.RenderScope
 
 /**
  * System window for displaying Compose UI, inheriting [javax.swing.JFrame].
@@ -55,8 +57,10 @@ class ComposeWindow @ExperimentalComposeUiApi constructor(
     graphicsConfiguration: GraphicsConfiguration? = null,
     skiaLayerAnalytics: SkiaLayerAnalytics = SkiaLayerAnalytics.Empty,
     savedState: SavedState? = null,
-    coroutineContext: CoroutineContext = EmptyCoroutineContext
+    coroutineContext: CoroutineContext = EmptyCoroutineContext,
+    renderFactory: RenderFactory = RenderFactory.Default
 ) : JFrame(graphicsConfiguration) {
+    fun <T> withRenderInfo(block: RenderScope.() -> T) = composePanel.withRenderInfo(block)
     /**
      * System window for displaying Compose UI, inheriting [javax.swing.JFrame].
      *
@@ -64,15 +68,17 @@ class ComposeWindow @ExperimentalComposeUiApi constructor(
      * If null, the system default GraphicsConfiguration is assumed.
      */
     constructor(
-        graphicsConfiguration: GraphicsConfiguration? = null
-    ) : this(graphicsConfiguration, SkiaLayerAnalytics.Empty)
+        graphicsConfiguration: GraphicsConfiguration? = null,
+        renderFactory: RenderFactory = RenderFactory.Default
+    ) : this(graphicsConfiguration, SkiaLayerAnalytics.Empty, renderFactory)
 
     private val composePanel = ComposeWindowPanel(
         window = this,
         isUndecorated = ::isUndecorated,
         skiaLayerAnalytics = skiaLayerAnalytics,
         savedState = savedState,
-        coroutineContext = coroutineContext
+        coroutineContext = coroutineContext,
+        renderFactory
     )
     private val undecoratedWindowResizer = UndecoratedWindowResizer(this)
 

@@ -45,6 +45,7 @@ import org.jetbrains.skia.Canvas
 import org.jetbrains.skiko.DelicateSkikoApi
 import org.jetbrains.skiko.SkiaLayerAnalytics
 import org.jetbrains.skiko.transparentWindowBackgroundHack
+import org.jetbrains.skiko.RenderFactory
 
 internal class WindowComposeSceneLayer(
     composeContainer: ComposeContainer,
@@ -54,7 +55,8 @@ internal class WindowComposeSceneLayer(
     layoutDirection: LayoutDirection,
     focusable: Boolean,
     compositionContext: CompositionContext,
-    private val renderSettings: RenderSettings
+    private val renderSettings: RenderSettings,
+    private val renderFactory: RenderFactory
 ) : DesktopComposeSceneLayer(composeContainer, density, layoutDirection) {
     // WindowComposeSceneLayer is tied to the window it was created with
     private val parentWindow = requireNotNull(composeContainer.window)
@@ -212,6 +214,7 @@ internal class WindowComposeSceneLayer(
             renderDelegate = renderDelegate,
             skiaLayerAnalytics = skiaLayerAnalytics,
             renderSettings = renderSettings,
+            renderFactory = renderFactory
         )
     }
 

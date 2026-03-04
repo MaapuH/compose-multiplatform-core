@@ -39,6 +39,7 @@ import androidx.compose.ui.util.setUndecoratedSafely
 import androidx.compose.ui.util.windowListenerRef
 import androidx.compose.ui.util.windowStateListenerRef
 import androidx.compose.ui.window.FrameWindowScope
+import androidx.compose.ui.window.LocalRenderFactory
 import androidx.compose.ui.window.LocalWindowExceptionHandlerFactory
 import androidx.compose.ui.window.UndecoratedWindowDecoration
 import androidx.compose.ui.window.Window
@@ -231,6 +232,7 @@ fun SwingWindow(
 
     val coroutineContext = rememberCoroutineScope().coroutineContext
 
+    val renderFactory = LocalRenderFactory.current
     SwingWindow(
         visible = visible,
         onPreviewKeyEvent = onPreviewKeyEvent,
@@ -239,7 +241,8 @@ fun SwingWindow(
             val graphicsConfiguration = WindowLocationTracker.lastActiveGraphicsConfiguration
             ComposeWindow(
                 graphicsConfiguration = graphicsConfiguration,
-                coroutineContext = coroutineContext
+                coroutineContext = coroutineContext,
+                renderFactory = renderFactory
             ).apply {
                 // close state is controlled by WindowState.isOpen
                 defaultCloseOperation = JFrame.DO_NOTHING_ON_CLOSE

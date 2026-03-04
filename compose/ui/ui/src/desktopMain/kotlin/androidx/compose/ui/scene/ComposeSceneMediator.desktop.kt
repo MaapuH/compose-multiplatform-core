@@ -60,6 +60,7 @@ import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.platform.a11y.ComposeSceneAccessibility
 import androidx.compose.ui.scene.skia.SkiaLayerComponent
+import androidx.compose.ui.scene.skia.WindowSkiaLayerComponent
 import androidx.compose.ui.semantics.SemanticsOwner
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
@@ -102,6 +103,7 @@ import org.jetbrains.skiko.ClipRectangle
 import org.jetbrains.skiko.ExperimentalSkikoApi
 import org.jetbrains.skiko.GraphicsApi
 import org.jetbrains.skiko.SkikoRenderDelegate
+import org.jetbrains.skiko.context.RenderScope
 import org.jetbrains.skiko.hostOs
 import org.jetbrains.skiko.swing.SkiaSwingLayer
 
@@ -133,6 +135,8 @@ internal class ComposeSceneMediator(
     skiaLayerComponentFactory: (ComposeSceneMediator) -> SkiaLayerComponent,
     composeSceneFactory: (ComposeSceneMediator) -> ComposeScene,
 ) : SkikoRenderDelegate {
+    fun <T> withRenderInfo(block: RenderScope.() -> T) =
+        (skiaLayerComponent as WindowSkiaLayerComponent).contentComponent.withRenderInfo(block)
     private var isDisposed = false
     private var isComponentAttached = false
     private val invisibleComponent = InvisibleComponent()

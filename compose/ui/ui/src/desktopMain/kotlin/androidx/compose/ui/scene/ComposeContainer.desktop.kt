@@ -61,7 +61,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.skia.Canvas
 import org.jetbrains.skiko.MainUIDispatcher
+import org.jetbrains.skiko.RenderFactory
 import org.jetbrains.skiko.SkiaLayerAnalytics
+import org.jetbrains.skiko.context.RenderScope
 
 /**
  * Internal entry point to Compose.
@@ -92,8 +94,8 @@ internal class ComposeContainer(
     private val layerType: LayerType = ComposeFeatureFlags.layerType.value,
     private val renderSettings: RenderSettings = RenderSettings.SkiaSurface(),
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
-) : WindowFocusListener,
-    WindowListener {
+    private val renderFactory: RenderFactory = RenderFactory.Default,
+) : WindowFocusListener, WindowListener {
     val windowContext = PlatformWindowContext()
     var window: Window? = null
         private set
@@ -128,6 +130,8 @@ internal class ComposeContainer(
 
     @VisibleForTesting
     val architectureComponentsOwner = DefaultArchitectureComponentsOwner(savedState)
+
+    fun <T> withRenderInfo(block: RenderScope.() -> T) = mediator.withRenderInfo(block)
 
     private val mediator = ComposeSceneMediator(
         container = container,
@@ -374,7 +378,8 @@ internal class ComposeContainer(
             windowContext = windowContext,
             renderDelegate = renderDelegate,
             skiaLayerAnalytics = skiaLayerAnalytics,
-            renderSettings = renderSettings
+            renderSettings = renderSettings,
+            renderFactory = renderFactory
         )
     }
 
@@ -416,7 +421,8 @@ internal class ComposeContainer(
                 layoutDirection = layoutDirection,
                 focusable = focusable,
                 compositionContext = compositionContext,
-                renderSettings = renderSettings
+                renderSettings = renderSettings,
+                renderFactory = renderFactory
             )
             LayerType.OnComponent -> SwingComposeSceneLayer(
                 composeContainer = this,

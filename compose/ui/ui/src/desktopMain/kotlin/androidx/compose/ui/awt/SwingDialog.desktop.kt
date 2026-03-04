@@ -41,6 +41,7 @@ import androidx.compose.ui.window.DialogModalityType
 import androidx.compose.ui.window.DialogState
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.DialogWindowScope
+import androidx.compose.ui.window.LocalRenderFactory
 import androidx.compose.ui.window.LocalWindow
 import androidx.compose.ui.window.LocalWindowExceptionHandlerFactory
 import androidx.compose.ui.window.UndecoratedWindowDecoration
@@ -202,6 +203,7 @@ fun SwingDialog(
     content: @Composable DialogWindowScope.() -> Unit
 ) {
     val owner = LocalWindow.current
+    val renderFactory = LocalRenderFactory.current
 
     val currentState by rememberUpdatedState(state)
     val currentTitle by rememberUpdatedState(title)
@@ -250,12 +252,14 @@ fun SwingDialog(
                     owner = owner,
                     modalityType = currentModalityType,
                     graphicsConfiguration = graphicsConfiguration,
-                    coroutineContext = coroutineContext
+                    coroutineContext = coroutineContext,
+                    renderFactory = renderFactory
                 )
             } else {
                 ComposeDialog(
                     graphicsConfiguration = graphicsConfiguration,
-                    coroutineContext = coroutineContext
+                    coroutineContext = coroutineContext,
+                    renderFactory = renderFactory
                 )
             }
             dialog.apply {

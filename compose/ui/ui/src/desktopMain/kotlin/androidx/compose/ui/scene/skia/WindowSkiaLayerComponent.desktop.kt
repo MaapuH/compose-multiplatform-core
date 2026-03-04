@@ -25,6 +25,7 @@ import java.awt.Graphics
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
 import org.jetbrains.skiko.GraphicsApi
+import org.jetbrains.skiko.RenderFactory
 import org.jetbrains.skiko.SkiaLayer
 import org.jetbrains.skiko.SkiaLayerAnalytics
 import org.jetbrains.skiko.SkiaLayerProperties
@@ -47,6 +48,7 @@ internal class WindowSkiaLayerComponent(
     renderDelegate: SkikoRenderDelegate,
     skiaLayerAnalytics: SkiaLayerAnalytics,
     private val renderSettings: RenderSettings.SkiaSurface,
+    renderFactory: RenderFactory = RenderFactory.Default
 ) : SkiaLayerComponent {
     /**
      * See also backend layer for swing interop in [SwingSkiaLayerComponent]
@@ -60,7 +62,8 @@ internal class WindowSkiaLayerComponent(
                 isVsyncEnabled = renderSettings.isVsyncEnabled ?: defaultProperties.isVsyncEnabled,
             )
         },
-        analytics = skiaLayerAnalytics
+        analytics = skiaLayerAnalytics,
+        renderFactory = renderFactory
     ) {
 
         init {

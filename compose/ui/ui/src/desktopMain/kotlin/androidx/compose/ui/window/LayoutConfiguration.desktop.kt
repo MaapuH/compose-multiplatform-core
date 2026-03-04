@@ -25,6 +25,7 @@ import java.awt.ComponentOrientation
 import java.awt.GraphicsConfiguration
 import java.awt.GraphicsEnvironment
 import java.util.*
+import org.jetbrains.skiko.RenderFactory
 
 // TODO(demin): detect OS fontScale
 //  font size can be changed on Windows 10 in Settings - Ease of Access,

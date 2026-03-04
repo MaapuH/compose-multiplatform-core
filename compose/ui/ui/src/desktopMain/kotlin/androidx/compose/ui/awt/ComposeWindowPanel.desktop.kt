@@ -23,6 +23,7 @@ import androidx.compose.ui.LayerType
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.scene.ComposeContainer
+import androidx.compose.ui.window.LocalRenderFactory
 import androidx.compose.ui.window.LocalWindow
 import androidx.savedstate.SavedState
 import java.awt.Component
@@ -35,8 +36,11 @@ import java.awt.event.MouseMotionListener
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import org.jetbrains.skiko.DelicateSkikoApi
+import java.awt.event.MouseWheelListener
+import org.jetbrains.skiko.RenderFactory
 import org.jetbrains.skiko.SkiaLayerAnalytics
 import org.jetbrains.skiko.transparentWindowBackgroundHack
+import org.jetbrains.skiko.context.RenderScope
 
 /**
  * A panel used as a main view in [ComposeWindow] and [ComposeDialog].
@@ -47,9 +51,11 @@ internal class ComposeWindowPanel(
     skiaLayerAnalytics: SkiaLayerAnalytics,
     savedState: SavedState? = null,
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
+    private val renderFactory: RenderFactory = RenderFactory.Default,
 ) : JLayeredPaneWithTransparencyHack() {
     private var isDisposed = false
 
+    fun <T> withRenderInfo(block: RenderScope.() -> T) = composeContainer.withRenderInfo(block)
     // AWT can leak JFrame in some cases
     // (see https://github.com/JetBrains/compose-jb/issues/1688),
     // so we nullify bridge on dispose, to prevent keeping
@@ -70,7 +76,8 @@ internal class ComposeWindowPanel(
         // Swing graphics is not supposed to be used here.
         // TODO: Add isVsyncEnabled flag to ComposeWindowPanel constructor
         renderSettings = RenderSettings.SkiaSurface(),
-        coroutineContext = coroutineContext
+        coroutineContext = coroutineContext,
+        renderFactory = renderFactory
     )
     private val composeContainer
         get() = requireNotNull(_composeContainer) {
@@ -151,6 +158,7 @@ internal class ComposeWindowPanel(
         )
         composeContainer.setContent {
             CompositionLocalProvider(
+                LocalRenderFactory provides renderFactory,
                 LocalWindow provides window
             ) {
                 WindowContentLayout(modifier, content)
